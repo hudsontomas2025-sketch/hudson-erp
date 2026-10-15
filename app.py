@@ -223,32 +223,47 @@ if "ultima_venta" not in st.session_state:
 session = SessionLocal()
 
 # ========================================================
-# 4. LOGIN
+# ========================================================
+# 4. LOGIN (CON LOGO, BOTÓN AZUL OSCURO Y SIN CONTRASEÑA)
 # ========================================================
 if st.session_state["user"] is None:
-    st.markdown('<div class="main-title" style="text-align:center; margin-top:40px;">HUDSON REPUESTOS</div>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align:center; color:#94a3b8;">Sistema de Gestión Integral ERP & CRM • Concordia, Entre Ríos</p>', unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([1, 1.6, 1])
+    st.markdown("""
+    <div style="text-align: center; margin-top: 25px; margin-bottom: 20px;">
+        <div style="display: inline-block; background: #0f172a; padding: 18px 26px; border-radius: 50%; border: 3px solid #0284c7; box-shadow: 0 4px 20px rgba(2, 132, 199, 0.35);">
+            <span style="font-size: 55px;">⚙️🏎️</span>
+        </div>
+        <div class="main-title" style="margin-top: 15px; letter-spacing: 1.5px;">HUDSON REPUESTOS</div>
+        <p style="color: #94a3b8; font-size: 0.95rem; margin-top: -4px;">
+            Sistema de Gestión Integral ERP & CRM • Alvear 924, Concordia, Entre Ríos
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns([1, 1.4, 1])
     with c2:
         with st.form("f_login"):
-            st.subheader("Acceso al Sistema")
-            u = st.text_input("Usuario")
-            p = st.text_input("Contraseña", type="password")
-            if st.form_submit_button("Ingresar al Sistema", use_container_width=True):
-                usr = session.query(Usuario).filter(Usuario.username == u.strip(), Usuario.password == p.strip()).first()
+            st.markdown("<h4 style='text-align: center; color: #f8fafc; margin-bottom: 18px;'>Acceso al Sistema</h4>", unsafe_allow_html=True)
+            u = st.text_input("Usuario", placeholder="Ej: tomas o caja")
+            submit = st.form_submit_button("Ingresar al Sistema", use_container_width=True)
+            
+            if submit:
+                u_clean = u.strip().lower()
+                usr = session.query(Usuario).filter(Usuario.username == u_clean).first()
                 if usr:
                     if not usr.activo:
-                        st.error("Este usuario se encuentra suspendido. Contacte al administrador.")
+                        st.error("⚠️ Este usuario se encuentra suspendido. Contacte a Tomas Hudson.")
                     else:
                         st.session_state["user"] = {"id": usr.id, "nombre": usr.nombre, "rol": usr.rol, "username": usr.username}
                         st.rerun()
                 else:
-                    st.error("Credenciales incorrectas")
-        st.caption("ℹ️ Administración: `tomas` / `123` | Mostrador: `caja` / `123`")
-    st.stop()
-
-u_act = st.session_state["user"]
-es_admin = (u_act["rol"] == "ADMIN")
+                    st.error("❌ Usuario no encontrado. Ingrese 'tomas' o 'caja'.")
+        
+        st.markdown("""
+        <div style="text-align: center; margin-top: 15px; color: #64748b; font-size: 0.85rem;">
+            ℹ️ <b>Administración:</b> <code>tomas</code> | <b>Mostrador:</b> <code>caja</code>
+        </div>
+        """, unsafe_allow_html=True)
+    st.stop() (u_act["rol"] == "ADMIN")
 
 # ========================================================
 # 5. MENÚ LATERAL (ARQUEO SOLO VISIBLE PARA ADMINISTRADOR)
